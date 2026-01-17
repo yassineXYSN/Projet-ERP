@@ -51,36 +51,26 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-              <svg className="h-6 w-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
             <h1 className="text-2xl font-bold">Procurement Manager</h1>
           </div>
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Create Account</CardTitle>
-              <CardDescription>Sign up to start managing your procurement</CardDescription>
+              <CardTitle className="text-2xl">Créer un compte</CardTitle>
+              <CardDescription>Inscrivez-vous pour gérer vos approvisionnements</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSignUp}>
                 <div className="flex flex-col gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="fullName">Full Name</Label>
+                    <Label htmlFor="fullName">Nom complet</Label>
                     <Input
                       id="fullName"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Votre nom complet"
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
@@ -91,56 +81,57 @@ export default function SignUpPage() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="m@example.com"
+                      placeholder="Votre email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Mot de passe</Label>
                     <Input
                       id="password"
                       type="password"
+                      placeholder="Votre mot de passe"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="role">Role</Label>
+                    <Label htmlFor="role">Rôle</Label>
                     <Select value={role} onValueChange={setRole}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder="Sélectionner un rôle" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="buyer">Buyer</SelectItem>
-                        <SelectItem value="inventory_manager">Inventory Manager</SelectItem>
-                        <SelectItem value="quality_control">Quality Control</SelectItem>
+                        <SelectItem value="buyer">Acheteur</SelectItem>
+                        <SelectItem value="inventory_manager">Gestionnaire Stock</SelectItem>
+                        <SelectItem value="quality_control">Contrôle Qualité</SelectItem>
                         <SelectItem value="finance">Finance</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="admin">Administrateur</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="department">Department</Label>
+                    <Label htmlFor="department">Département</Label>
                     <Input
                       id="department"
                       type="text"
-                      placeholder="Procurement"
+                      placeholder="Votre département"
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
                     />
                   </div>
                   {error && <p className="text-sm text-destructive">{error}</p>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating account..." : "Create account"}
+                    {isLoading ? "Création en cours..." : "Créer le compte"}
                   </Button>
                 </div>
                 <div className="mt-4 text-center text-sm">
-                  Already have an account?{" "}
+                  Vous avez déjà un compte ?{" "}
                   <Link href="/login" className="underline underline-offset-4 text-primary">
-                    Sign in
+                    Se connecter
                   </Link>
                 </div>
               </form>

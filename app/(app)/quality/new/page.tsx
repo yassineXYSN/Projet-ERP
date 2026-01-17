@@ -61,7 +61,7 @@ export default function NewQualityCheckPage() {
       }
 
       const { error: insertError } = await supabase.from("quality_checks").insert({
-        reception_id: formData.reception_id,
+        reception_id: formData.reception_id || null,
         product_id: formData.product_id || null,
         check_type: formData.check_type,
         result: formData.result,

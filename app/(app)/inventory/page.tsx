@@ -67,7 +67,7 @@ export default async function InventoryPage() {
                       <TableCell className="font-medium">{product.name}</TableCell>
                       <TableCell>{product.sku}</TableCell>
                       <TableCell>{product.category || "-"}</TableCell>
-                      <TableCell className="text-right">${product.unit_price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{product.unit_price.toFixed(2)} DT</TableCell>
                       <TableCell className="text-right">{product.quantity_in_stock}</TableCell>
                       <TableCell className="text-right">{product.reorder_level}</TableCell>
                       <TableCell>

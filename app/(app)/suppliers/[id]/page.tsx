@@ -9,11 +9,12 @@ import { notFound } from "next/navigation"
 export default async function SupplierDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const supabase = await createClient()
 
-  const { data: supplier } = await supabase.from("suppliers").select("*").eq("id", params.id).single()
+  const { data: supplier } = await supabase.from("suppliers").select("*").eq("id", id).single()
 
   if (!supplier) {
     notFound()

@@ -267,7 +267,7 @@ export default function NewOrderPage() {
                     <SelectContent>
                       {products.map((product) => (
                         <SelectItem key={product.id} value={product.id}>
-                          {product.name} - ${product.unit_price}
+                          {product.name} - {product.unit_price} DT
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -296,7 +296,7 @@ export default function NewOrderPage() {
 
                 <div className="w-32">
                   <p className="text-sm text-muted-foreground">Total</p>
-                  <p className="text-base font-medium">${(item.quantity * item.unit_price).toFixed(2)}</p>
+                  <p className="text-base font-medium">{(item.quantity * item.unit_price).toFixed(2)} DT</p>
                 </div>
 
                 <Button type="button" variant="ghost" size="icon" onClick={() => removeOrderItem(index)}>
@@ -313,7 +313,7 @@ export default function NewOrderPage() {
               <div className="flex justify-end pt-4 border-t">
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Total Amount</p>
-                  <p className="text-2xl font-bold">${calculateTotal().toFixed(2)}</p>
+                  <p className="text-2xl font-bold">{calculateTotal().toFixed(2)} DT</p>
                 </div>
               </div>
             )}

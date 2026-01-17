@@ -9,11 +9,12 @@ import { notFound } from "next/navigation"
 export default async function ProductDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const supabase = await createClient()
 
-  const { data: product } = await supabase.from("products").select("*").eq("id", params.id).single()
+  const { data: product } = await supabase.from("products").select("*").eq("id", id).single()
 
   if (!product) {
     notFound()
@@ -60,7 +61,7 @@ export default async function ProductDetailPage({
             )}
             <div>
               <p className="text-sm font-medium text-muted-foreground">Unit Price</p>
-              <p className="text-2xl font-bold mt-1">${product.unit_price.toFixed(2)}</p>
+              <p className="text-2xl font-bold mt-1">{product.unit_price.toFixed(2)} DT</p>
             </div>
           </CardContent>
         </Card>
