@@ -6,7 +6,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <svg className="h-5 w-5 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@ export default function HomePage() {
       </header>
 
       <main className="flex-1">
-        <section className="container py-24 md:py-32">
+        <section className="container mx-auto px-4 py-24 md:py-32">
           <div className="mx-auto max-w-3xl text-center space-y-8">
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl text-balance">
               Complete Procurement Management Solution
@@ -55,36 +55,38 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="container py-24 bg-muted/50">
-          <div className="mx-auto max-w-5xl">
-            <h2 className="text-3xl font-bold text-center mb-12">Everything You Need</h2>
-            <div className="grid gap-8 md:grid-cols-3">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <Package className="h-8 w-8 text-primary" />
+        <section className="py-24 bg-muted/50">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-5xl">
+              <h2 className="text-3xl font-bold text-center mb-12">Everything You Need</h2>
+              <div className="grid gap-8 md:grid-cols-3">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <Package className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Inventory Management</h3>
+                  <p className="text-muted-foreground">
+                    Track stock levels, manage products, and automate reordering with real-time inventory visibility.
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold">Inventory Management</h3>
-                <p className="text-muted-foreground">
-                  Track stock levels, manage products, and automate reordering with real-time inventory visibility.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <CheckCircle className="h-8 w-8 text-primary" />
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <CheckCircle className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Quality Control</h3>
+                  <p className="text-muted-foreground">
+                    Ensure product quality with integrated inspection workflows and compliance tracking.
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold">Quality Control</h3>
-                <p className="text-muted-foreground">
-                  Ensure product quality with integrated inspection workflows and compliance tracking.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <TrendingUp className="h-8 w-8 text-primary" />
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <TrendingUp className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Full Workflow</h3>
+                  <p className="text-muted-foreground">
+                    From project creation to ERP integration, manage your entire procurement lifecycle.
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold">Full Workflow</h3>
-                <p className="text-muted-foreground">
-                  From project creation to ERP integration, manage your entire procurement lifecycle.
-                </p>
               </div>
             </div>
           </div>
@@ -92,7 +94,7 @@ export default function HomePage() {
       </main>
 
       <footer className="border-t py-8">
-        <div className="container text-center text-sm text-muted-foreground">
+        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           © 2025 Procurement Manager. Built with Next.js and Supabase.
         </div>
       </footer>

@@ -1,24 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  TrendingUp,
-  DollarSign,
-  Package,
-  Users,
-  ShoppingCart,
-  FileText,
-} from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { createClient } from "@/lib/supabase/server"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { TrendingUp, DollarSign, Package, Users, ShoppingCart, FileText } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export default async function ReportsPage() {
-  const supabase = await createClient();
+  const supabase = await createClient()
 
   // Fetch comprehensive statistics
   const [
@@ -30,57 +16,35 @@ export default async function ReportsPage() {
     { data: invoiceStats },
     { data: erpLogs },
   ] = await Promise.all([
-    supabase
-      .from("purchase_orders")
-      .select("*", { count: "exact", head: true }),
-    supabase
-      .from("suppliers")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "validated"),
+    supabase.from("purchase_orders").select("*", { count: "exact", head: true }),
+    supabase.from("suppliers").select("*", { count: "exact", head: true }).eq("status", "validated"),
     supabase.from("products").select("*", { count: "exact", head: true }),
     supabase.from("invoices").select("*", { count: "exact", head: true }),
-    supabase
-      .from("purchase_orders")
-      .select("status, total_amount")
-      .not("total_amount", "is", null),
-    supabase
-      .from("invoices")
-      .select("status, total_amount, paid_amount")
-      .not("total_amount", "is", null),
-    supabase
-      .from("erp_logs")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(10),
-  ]);
+    supabase.from("purchase_orders").select("status, total_amount").not("total_amount", "is", null),
+    supabase.from("invoices").select("status, total_amount, paid_amount").not("total_amount", "is", null),
+    supabase.from("erp_logs").select("*").order("created_at", { ascending: false }).limit(10),
+  ])
 
   // Calculate total order value
-  const totalOrderValue =
-    orderStats?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
+  const totalOrderValue = orderStats?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0
 
   // Calculate invoice statistics
-  const totalInvoiceAmount =
-    invoiceStats?.reduce((sum, inv) => sum + (inv.total_amount || 0), 0) || 0;
-  const totalPaidAmount =
-    invoiceStats?.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0) || 0;
-  const outstandingAmount = totalInvoiceAmount - totalPaidAmount;
+  const totalInvoiceAmount = invoiceStats?.reduce((sum, inv) => sum + (inv.total_amount || 0), 0) || 0
+  const totalPaidAmount = invoiceStats?.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0) || 0
+  const outstandingAmount = totalInvoiceAmount - totalPaidAmount
 
   // Order status breakdown
   const orderStatusCounts =
     orderStats?.reduce((acc: any, order) => {
-      acc[order.status] = (acc[order.status] || 0) + 1;
-      return acc;
-    }, {}) || {};
+      acc[order.status] = (acc[order.status] || 0) + 1
+      return acc
+    }, {}) || {}
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Reports & Analytics
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Overview of procurement operations and ERP integration
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
+        <p className="text-muted-foreground mt-1">Overview of procurement operations and ERP integration</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -91,24 +55,18 @@ export default async function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalOrders || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Total order value: ${totalOrderValue.toFixed(2)}
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Total order value: {totalOrderValue.toFixed(2)} DT</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Active Suppliers
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Active Suppliers</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalSuppliers || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Validated suppliers
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Validated suppliers</p>
           </CardContent>
         </Card>
 
@@ -119,24 +77,18 @@ export default async function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalProducts || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Total inventory items
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Total inventory items</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Invoices
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalInvoices || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Total amount: ${totalInvoiceAmount.toFixed(2)}
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Total amount: {totalInvoiceAmount.toFixed(2)} DT</p>
           </CardContent>
         </Card>
 
@@ -146,12 +98,8 @@ export default async function ReportsPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              ${totalPaidAmount.toFixed(2)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Total payments received
-            </p>
+            <div className="text-2xl font-bold text-green-600">{totalPaidAmount.toFixed(2)} DT</div>
+            <p className="text-xs text-muted-foreground mt-1">Total payments received</p>
           </CardContent>
         </Card>
 
@@ -161,9 +109,7 @@ export default async function ReportsPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              ${outstandingAmount.toFixed(2)}
-            </div>
+            <div className="text-2xl font-bold text-red-600">{outstandingAmount.toFixed(2)} DT</div>
             <p className="text-xs text-muted-foreground mt-1">Amount due</p>
           </CardContent>
         </Card>
@@ -178,9 +124,7 @@ export default async function ReportsPage() {
             <div className="space-y-3">
               {Object.entries(orderStatusCounts).map(([status, count]) => (
                 <div key={status} className="flex items-center justify-between">
-                  <span className="text-sm capitalize">
-                    {status.replace("_", " ")}
-                  </span>
+                  <span className="text-sm capitalize">{status.replace("_", " ")}</span>
                   <span className="text-sm font-medium">{count as number}</span>
                 </div>
               ))}
@@ -206,36 +150,27 @@ export default async function ReportsPage() {
                 {erpLogs && erpLogs.length > 0 ? (
                   erpLogs.map((log: any) => (
                     <TableRow key={log.id}>
-                      <TableCell className="capitalize">
-                        {log.entity_type}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {log.action.replace("_", " ")}
-                      </TableCell>
+                      <TableCell className="capitalize">{log.entity_type}</TableCell>
+                      <TableCell className="text-sm">{log.action.replace("_", " ")}</TableCell>
                       <TableCell>
                         <span
                           className={`text-xs px-2 py-1 rounded ${
                             log.status === "success"
                               ? "bg-green-100 text-green-700"
                               : log.status === "failed"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-yellow-100 text-yellow-700"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
                           }`}
                         >
                           {log.status}
                         </span>
                       </TableCell>
-                      <TableCell className="text-sm">
-                        {new Date(log.created_at).toLocaleDateString()}
-                      </TableCell>
+                      <TableCell className="text-sm">{new Date(log.created_at).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      className="text-center text-muted-foreground py-4"
-                    >
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-4">
                       No ERP logs yet
                     </TableCell>
                   </TableRow>
@@ -246,5 +181,5 @@ export default async function ReportsPage() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

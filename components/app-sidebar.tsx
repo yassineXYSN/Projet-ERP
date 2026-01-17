@@ -1,16 +1,6 @@
 "use client"
 
-import {
-  Home,
-  FolderKanban,
-  Package,
-  Users,
-  ShoppingCart,
-  ClipboardCheck,
-  FileText,
-  BarChart3,
-  Settings,
-} from "lucide-react"
+import { Home, FolderKanban, Package, Users, ShoppingCart, ClipboardCheck, FileText, Settings } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -34,7 +24,6 @@ const menuItems = [
   { title: "Purchase Orders", url: "/orders", icon: ShoppingCart },
   { title: "Quality Control", url: "/quality", icon: ClipboardCheck },
   { title: "Invoices", url: "/invoices", icon: FileText },
-  { title: "Reports", url: "/reports", icon: BarChart3 },
 ]
 
 export function AppSidebar() {

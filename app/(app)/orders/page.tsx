@@ -11,8 +11,16 @@ export default async function OrdersPage() {
 
   const { data: orders } = await supabase
     .from("purchase_orders")
-    .select("*, suppliers(name), profiles(full_name)")
+    .select("*, suppliers(name)")
     .order("created_at", { ascending: false })
+
+  const creatorIds = orders?.map((o: any) => o.created_by).filter(Boolean) || []
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .in("id", creatorIds.length > 0 ? creatorIds : ["00000000-0000-0000-0000-000000000000"])
+
+  const profileMap = new Map(profiles?.map((p: any) => [p.id, p.full_name]) || [])
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -67,8 +75,8 @@ export default async function OrdersPage() {
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">{order.order_number}</TableCell>
                     <TableCell>{order.suppliers?.name || "No supplier"}</TableCell>
-                    <TableCell>{order.profiles?.full_name || "Unknown"}</TableCell>
-                    <TableCell className="text-right">${order.total_amount?.toFixed(2) || "0.00"}</TableCell>
+                    <TableCell>{profileMap.get(order.created_by) || "Unknown"}</TableCell>
+                    <TableCell className="text-right">{order.total_amount?.toFixed(2) || "0.00"} DT</TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadge(order.status)}>{order.status.replace("_", " ")}</Badge>
                     </TableCell>

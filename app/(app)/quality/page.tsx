@@ -11,8 +11,16 @@ export default async function QualityPage() {
 
   const { data: qualityChecks } = await supabase
     .from("quality_checks")
-    .select("*, receptions(reception_number), products(name), profiles(full_name)")
+    .select("*, receptions(reception_number), products(name)")
     .order("checked_at", { ascending: false })
+
+  const inspectorIds = qualityChecks?.map((check: any) => check.inspector_id).filter(Boolean) || []
+  const { data: profiles } =
+    inspectorIds.length > 0
+      ? await supabase.from("profiles").select("id, full_name").in("id", inspectorIds)
+      : { data: [] }
+
+  const profileMap = new Map(profiles?.map((p: any) => [p.id, p.full_name]) || [])
 
   const getResultBadge = (result: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -62,7 +70,7 @@ export default async function QualityPage() {
                     <TableCell className="font-medium">{check.receptions?.reception_number || "N/A"}</TableCell>
                     <TableCell>{check.products?.name || "N/A"}</TableCell>
                     <TableCell>{check.check_type}</TableCell>
-                    <TableCell>{check.profiles?.full_name || "Unknown"}</TableCell>
+                    <TableCell>{profileMap.get(check.inspector_id) || "Unknown"}</TableCell>
                     <TableCell>
                       <Badge variant={getResultBadge(check.result)}>{check.result}</Badge>
                     </TableCell>
