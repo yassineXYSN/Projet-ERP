@@ -69,8 +69,8 @@ export default async function InvoicesPage() {
                     <TableCell>{invoice.purchase_orders?.order_number || "N/A"}</TableCell>
                     <TableCell>{new Date(invoice.invoice_date).toLocaleDateString()}</TableCell>
                     <TableCell>{invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "N/A"}</TableCell>
-                    <TableCell className="text-right">${invoice.total_amount.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${invoice.paid_amount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{invoice.total_amount.toFixed(2)} DT</TableCell>
+                    <TableCell className="text-right">{invoice.paid_amount.toFixed(2)} DT</TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadge(invoice.status)}>{invoice.status.replace("_", " ")}</Badge>
                     </TableCell>

@@ -4,30 +4,46 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export default async function OrderDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
+
+  if (id === "new") {
+    redirect("/orders/new")
+  }
+
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!uuidRegex.test(id)) {
+    notFound()
+  }
+
   const supabase = await createClient()
 
   const { data: order } = await supabase
     .from("purchase_orders")
-    .select("*, suppliers(name, contact_person, email, phone), profiles(full_name), projects(title)")
-    .eq("id", params.id)
+    .select("*, suppliers(name, contact_person, email, phone), projects(title)")
+    .eq("id", id)
     .single()
 
   if (!order) {
     notFound()
   }
 
-  const { data: orderItems } = await supabase
-    .from("purchase_order_items")
-    .select("*")
-    .eq("purchase_order_id", params.id)
+  let creatorName = "Unknown"
+  if (order.created_by) {
+    const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", order.created_by).single()
+    if (profile) {
+      creatorName = profile.full_name || "Unknown"
+    }
+  }
+
+  const { data: orderItems } = await supabase.from("purchase_order_items").select("*").eq("purchase_order_id", id)
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -79,7 +95,7 @@ export default async function OrderDetailPage({
             )}
             <div>
               <p className="text-sm font-medium text-muted-foreground">Created By</p>
-              <p className="text-base mt-1">{order.profiles?.full_name || "Unknown"}</p>
+              <p className="text-base mt-1">{creatorName}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Created Date</p>
@@ -151,8 +167,8 @@ export default async function OrderDetailPage({
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.product_name}</TableCell>
                     <TableCell className="text-right">{item.quantity}</TableCell>
-                    <TableCell className="text-right">${item.unit_price.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${item.total_price.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{item.unit_price.toFixed(2)} DT</TableCell>
+                    <TableCell className="text-right">{item.total_price.toFixed(2)} DT</TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -167,7 +183,7 @@ export default async function OrderDetailPage({
                   <TableCell colSpan={3} className="text-right">
                     Total Amount:
                   </TableCell>
-                  <TableCell className="text-right text-lg">${order.total_amount?.toFixed(2) || "0.00"}</TableCell>
+                  <TableCell className="text-right text-lg">{order.total_amount?.toFixed(2) || "0.00"} DT</TableCell>
                 </TableRow>
               )}
             </TableBody>
