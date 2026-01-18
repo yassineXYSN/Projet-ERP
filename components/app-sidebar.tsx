@@ -1,20 +1,30 @@
 "use client"
 
-import { Home, FolderKanban, Package, Users, ShoppingCart, ClipboardCheck, FileText, Settings, MessageSquare } from "lucide-react"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-} from "@/components/ui/sidebar"
+import { SidebarFooter } from "@/components/ui/sidebar"
+
 import Link from "next/link"
+
+import { SidebarMenuButton } from "@/components/ui/sidebar"
+
+import { SidebarMenuItem } from "@/components/ui/sidebar"
+
+import { SidebarMenu } from "@/components/ui/sidebar"
+
+import { SidebarGroupContent } from "@/components/ui/sidebar"
+
+import { SidebarGroupLabel } from "@/components/ui/sidebar"
+
+import { SidebarGroup } from "@/components/ui/sidebar"
+
+import { SidebarContent } from "@/components/ui/sidebar"
+
+import { SidebarHeader } from "@/components/ui/sidebar"
+
+import { Sidebar } from "@/components/ui/sidebar"
+
 import { usePathname } from "next/navigation"
+
+import { Home, FolderKanban, Package, Users, ShoppingCart, Truck, ClipboardCheck, FileText, Settings } from "lucide-react"
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
@@ -22,9 +32,9 @@ const menuItems = [
   { title: "Inventory", url: "/inventory", icon: Package },
   { title: "Suppliers", url: "/suppliers", icon: Users },
   { title: "Purchase Orders", url: "/orders", icon: ShoppingCart },
+  { title: "Receptions", url: "/receptions", icon: Truck },
   { title: "Quality Control", url: "/quality", icon: ClipboardCheck },
   { title: "Invoices", url: "/invoices", icon: FileText },
-  { title: "Chatbot", url: "/chatbot", icon: MessageSquare },
 ]
 
 export function AppSidebar() {

@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Plus, X } from "lucide-react"
+import { ArrowLeft, Plus, X, AlertCircle } from "lucide-react"
 import Link from "next/link"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface OrderItem {
   product_id: string
@@ -24,6 +25,7 @@ interface OrderItem {
 export default function NewOrderPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [dataLoading, setDataLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [suppliers, setSuppliers] = useState<any[]>([])
   const [projects, setProjects] = useState<any[]>([])
@@ -39,17 +41,31 @@ export default function NewOrderPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient()
+      setDataLoading(true)
+      setError(null)
 
-      const [suppliersRes, projectsRes, productsRes] = await Promise.all([
-        supabase.from("suppliers").select("*").eq("status", "validated"),
-        supabase.from("projects").select("*").in("status", ["approved", "in_progress"]),
-        supabase.from("products").select("*"),
-      ])
+      try {
+        const supabase = createClient()
 
-      if (suppliersRes.data) setSuppliers(suppliersRes.data)
-      if (projectsRes.data) setProjects(projectsRes.data)
-      if (productsRes.data) setProducts(productsRes.data)
+        const [suppliersRes, projectsRes, productsRes] = await Promise.all([
+          supabase.from("suppliers").select("*").eq("status", "validated"),
+          supabase.from("projects").select("*").in("status", ["approved", "in_progress"]),
+          supabase.from("products").select("*"),
+        ])
+
+        if (suppliersRes.error) throw suppliersRes.error
+        if (projectsRes.error) throw projectsRes.error
+        if (productsRes.error) throw productsRes.error
+
+        setSuppliers(suppliersRes.data || [])
+        setProjects(projectsRes.data || [])
+        setProducts(productsRes.data || [])
+      } catch (err: any) {
+        console.error("Error fetching data:", err)
+        setError("Erreur de chargement des données. Veuillez rafraîchir la page.")
+      } finally {
+        setDataLoading(false)
+      }
     }
 
     fetchData()
@@ -88,7 +104,7 @@ export default function NewOrderPage() {
     setError(null)
 
     if (orderItems.length === 0) {
-      setError("Please add at least one item to the order")
+      setError("Veuillez ajouter au moins un article à la commande")
       setIsLoading(false)
       return
     }
@@ -101,12 +117,11 @@ export default function NewOrderPage() {
       } = await supabase.auth.getUser()
 
       if (!user) {
-        throw new Error("Not authenticated")
+        throw new Error("Non authentifié")
       }
 
       const totalAmount = calculateTotal()
 
-      // Insert purchase order
       const { data: order, error: orderError } = await supabase
         .from("purchase_orders")
         .insert({
@@ -123,7 +138,6 @@ export default function NewOrderPage() {
 
       if (orderError) throw orderError
 
-      // Insert order items
       const itemsToInsert = orderItems.map((item) => ({
         purchase_order_id: order.id,
         product_id: item.product_id || null,
@@ -145,6 +159,17 @@ export default function NewOrderPage() {
     }
   }
 
+  if (dataLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Chargement des données...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
@@ -154,20 +179,27 @@ export default function NewOrderPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">New Purchase Order</h1>
-          <p className="text-muted-foreground mt-1">Create a new purchase order</p>
+          <h1 className="text-3xl font-bold tracking-tight">Nouveau Bon de Commande</h1>
+          <p className="text-muted-foreground mt-1">Créer un nouveau bon de commande</p>
         </div>
       </div>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Order Information</CardTitle>
+            <CardTitle>Informations de la Commande</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="order_number">Order Number</Label>
+                <Label htmlFor="order_number">Numéro de Commande</Label>
                 <Input
                   id="order_number"
                   value={formData.order_number}
@@ -177,15 +209,15 @@ export default function NewOrderPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">Statut</Label>
                 <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="submitted">Submitted</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="draft">Brouillon</SelectItem>
+                    <SelectItem value="submitted">Soumis</SelectItem>
+                    <SelectItem value="approved">Approuvé</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -193,13 +225,13 @@ export default function NewOrderPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="project_id">Project (Optional)</Label>
+                <Label htmlFor="project_id">Projet (Optionnel)</Label>
                 <Select
                   value={formData.project_id}
                   onValueChange={(value) => setFormData({ ...formData, project_id: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select project" />
+                    <SelectValue placeholder="Sélectionner un projet" />
                   </SelectTrigger>
                   <SelectContent>
                     {projects.map((project) => (
@@ -212,13 +244,13 @@ export default function NewOrderPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="supplier_id">Supplier</Label>
+                <Label htmlFor="supplier_id">Fournisseur</Label>
                 <Select
                   value={formData.supplier_id}
                   onValueChange={(value) => setFormData({ ...formData, supplier_id: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select supplier" />
+                    <SelectValue placeholder="Sélectionner un fournisseur" />
                   </SelectTrigger>
                   <SelectContent>
                     {suppliers.map((supplier) => (
@@ -235,7 +267,7 @@ export default function NewOrderPage() {
               <Label htmlFor="notes">Notes</Label>
               <Textarea
                 id="notes"
-                placeholder="Additional notes about this order..."
+                placeholder="Notes supplémentaires sur cette commande..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={3}
@@ -246,23 +278,23 @@ export default function NewOrderPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Order Items</CardTitle>
+            <CardTitle>Articles de la Commande</CardTitle>
             <Button type="button" onClick={addOrderItem} size="sm">
               <Plus className="mr-2 h-4 w-4" />
-              Add Item
+              Ajouter un Article
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             {orderItems.map((item, index) => (
               <div key={index} className="flex gap-4 items-end border-b pb-4 last:border-0">
                 <div className="flex-1 space-y-2">
-                  <Label>Product</Label>
+                  <Label>Produit</Label>
                   <Select
                     value={item.product_id}
                     onValueChange={(value) => updateOrderItem(index, "product_id", value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select product" />
+                      <SelectValue placeholder="Sélectionner un produit" />
                     </SelectTrigger>
                     <SelectContent>
                       {products.map((product) => (
@@ -275,7 +307,7 @@ export default function NewOrderPage() {
                 </div>
 
                 <div className="w-24 space-y-2">
-                  <Label>Quantity</Label>
+                  <Label>Quantité</Label>
                   <Input
                     type="number"
                     min="1"
@@ -285,7 +317,7 @@ export default function NewOrderPage() {
                 </div>
 
                 <div className="w-32 space-y-2">
-                  <Label>Unit Price</Label>
+                  <Label>Prix Unitaire</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -306,13 +338,15 @@ export default function NewOrderPage() {
             ))}
 
             {orderItems.length === 0 && (
-              <p className="text-center text-muted-foreground py-8">No items added. Click "Add Item" to get started.</p>
+              <p className="text-center text-muted-foreground py-8">
+                Aucun article ajouté. Cliquez sur "Ajouter un Article" pour commencer.
+              </p>
             )}
 
             {orderItems.length > 0 && (
               <div className="flex justify-end pt-4 border-t">
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Total Amount</p>
+                  <p className="text-sm text-muted-foreground">Montant Total</p>
                   <p className="text-2xl font-bold">{calculateTotal().toFixed(2)} DT</p>
                 </div>
               </div>
@@ -320,14 +354,12 @@ export default function NewOrderPage() {
           </CardContent>
         </Card>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
-
         <div className="flex gap-4">
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create Order"}
+            {isLoading ? "Création en cours..." : "Créer la Commande"}
           </Button>
           <Button type="button" variant="outline" asChild>
-            <Link href="/orders">Cancel</Link>
+            <Link href="/orders">Annuler</Link>
           </Button>
         </div>
       </form>

@@ -34,15 +34,26 @@ export default function NewInvoicePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient()
+      try {
+        const supabase = createClient()
 
-      const [suppliersRes, ordersRes] = await Promise.all([
-        supabase.from("suppliers").select("*").eq("status", "validated"),
-        supabase.from("purchase_orders").select("*").in("status", ["delivered", "confirmed"]),
-      ])
+        const [suppliersRes, ordersRes] = await Promise.all([
+          supabase.from("suppliers").select("*").eq("status", "validated"),
+          supabase.from("purchase_orders").select("id, order_number, status"),
+        ])
 
-      if (suppliersRes.data) setSuppliers(suppliersRes.data)
-      if (ordersRes.data) setPurchaseOrders(ordersRes.data)
+        console.log("[v0] Suppliers:", suppliersRes.data)
+        console.log("[v0] Purchase orders:", ordersRes.data)
+
+        if (suppliersRes.data) setSuppliers(suppliersRes.data)
+        if (ordersRes.data) setPurchaseOrders(ordersRes.data)
+
+        if (suppliersRes.error) console.error("[v0] Suppliers error:", suppliersRes.error)
+        if (ordersRes.error) console.error("[v0] Orders error:", ordersRes.error)
+      } catch (err: any) {
+        console.error("Failed to fetch data:", err)
+        setError("Failed to load form data. Please refresh the page.")
+      }
     }
 
     fetchData()

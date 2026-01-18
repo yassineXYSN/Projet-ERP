@@ -67,13 +67,13 @@ export function DashboardCharts({
   totalProducts,
 }: DashboardChartsProps) {
   const COLORS = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
+    "hsl(210, 40%, 20%)",
+    "hsl(220, 35%, 25%)",
+    "hsl(215, 38%, 22%)",
+    "hsl(210, 42%, 18%)",
+    "hsl(225, 40%, 24%)",
   ]
-  const QUALITY_COLORS = ["hsl(142, 76%, 36%)", "hsl(0, 84%, 60%)", "hsl(45, 93%, 47%)"]
+  const QUALITY_COLORS = ["hsl(142, 76%, 25%)", "hsl(0, 84%, 35%)", "hsl(45, 93%, 25%)"]
 
   const totalOrders = orderStatusData.reduce((sum, item) => sum + item.value, 0)
   const totalQuality = qualityData.reduce((sum, item) => sum + item.value, 0)
@@ -90,7 +90,19 @@ export function DashboardCharts({
           {orderStatusData.length > 0 ? (
             <ChartContainer config={orderChartConfig} className="h-[220px] w-full">
               <PieChart>
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip
+                content={({ active, payload }) => {
+                  if (active && payload?.[0]) {
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-2">
+                        <p className="text-sm font-medium">{payload[0].name}</p>
+                        <p className="text-sm">{payload[0].value}</p>
+                      </div>
+                    )
+                  }
+                  return null
+                }}
+              />
                 <Pie
                   data={orderStatusData}
                   dataKey="value"
@@ -102,7 +114,7 @@ export function DashboardCharts({
                   paddingAngle={2}
                 >
                   {orderStatusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={entry.fill || COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Legend
@@ -134,7 +146,19 @@ export function DashboardCharts({
           {qualityData.length > 0 ? (
             <ChartContainer config={qualityChartConfig} className="h-[220px] w-full">
               <PieChart>
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip
+                content={({ active, payload }) => {
+                  if (active && payload?.[0]) {
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-2">
+                        <p className="text-sm font-medium">{payload[0].name}</p>
+                        <p className="text-sm">{payload[0].value}</p>
+                      </div>
+                    )
+                  }
+                  return null
+                }}
+              />
                 <Pie
                   data={qualityData}
                   dataKey="value"
@@ -187,7 +211,7 @@ export function DashboardCharts({
                   "Amount",
                 ]}
               />
-              <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="value" fill="hsl(210, 40%, 20%)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ChartContainer>
           <div className="grid grid-cols-2 gap-2 mt-4 text-center">
