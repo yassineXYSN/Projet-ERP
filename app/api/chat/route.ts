@@ -60,13 +60,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Failed to save message" }, { status: 500 })
     }
 
-    const webhookUrl = process.env.N8N_WEBHOOK_URL
+    const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
 
     console.log("API Route: Received chat request")
     console.log("API Route: Webhook URL configured:", !!webhookUrl)
 
     if (!webhookUrl) {
-      console.error("API Route Error: N8N_WEBHOOK_URL is missing")
+      console.error("API Route Error: NEXT_PUBLIC_N8N_WEBHOOK_URL is missing")
       return NextResponse.json(
         { error: "Webhook URL not configured in environment variables" },
         { status: 500 }

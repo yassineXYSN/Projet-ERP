@@ -24,10 +24,11 @@ import { Sidebar } from "@/components/ui/sidebar"
 
 import { usePathname } from "next/navigation"
 
-import { Home, FolderKanban, Package, Users, ShoppingCart, Truck, ClipboardCheck, FileText, Settings } from "lucide-react"
+import { Home, FolderKanban, Package, Users, ShoppingCart, Truck, ClipboardCheck, FileText, Settings, Bot } from "lucide-react"
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
+  { title: "Chatbot", url: "/chatbot", icon: Bot },
   { title: "Projects", url: "/projects", icon: FolderKanban },
   { title: "Inventory", url: "/inventory", icon: Package },
   { title: "Suppliers", url: "/suppliers", icon: Users },
